@@ -1,8 +1,10 @@
 package org.example.homechoretrackerapi.user.controller;
 
+import org.example.homechoretrackerapi.common.exception.EntityNotFoundException;
 import org.example.homechoretrackerapi.user.model.User;
 import org.example.homechoretrackerapi.user.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,8 +22,12 @@ public class UserController {
 
     @GetMapping
     public List<User> getUsers() {
-        List<User> users = userService.getUsers();
+        return userService.getUsers();
+    }
 
-        return users;
+    @GetMapping("{id}")
+    public User getUserById(@PathVariable Long id) {
+        return userService.getUserById(id)
+            .orElseThrow(() -> new EntityNotFoundException(String.format("User with id '%d' not found", id)));
     }
 }
