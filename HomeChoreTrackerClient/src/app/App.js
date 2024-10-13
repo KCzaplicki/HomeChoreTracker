@@ -13,7 +13,7 @@ function App() {
             <AppHeader />
           </Container>
         </AppBar>
-        <Container maxWidth="md">
+        <Container maxWidth="md" sx={{ mt: 2 }}>
           <Routes />
         </Container>
       </Router>

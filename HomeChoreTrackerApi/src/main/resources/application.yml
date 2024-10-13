@@ -22,3 +22,5 @@ security:
   jwt:
     secret-key: 2fc5ee86dd134066d97c6699fa5e087992019ca25a44688dab6b941a4707af30
     expiration-time: 3600000
+  cors:
+    allowed-origin: http://localhost:3000

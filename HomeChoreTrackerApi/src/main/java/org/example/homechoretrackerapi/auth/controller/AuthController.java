@@ -5,10 +5,7 @@ import org.example.homechoretrackerapi.auth.dto.LoginResponse;
 import org.example.homechoretrackerapi.auth.service.AuthenticateService;
 import org.example.homechoretrackerapi.auth.service.JwtService;
 import org.example.homechoretrackerapi.user.model.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("auth")
@@ -22,7 +19,7 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
-    @GetMapping("login")
+    @PostMapping("login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest) {
         User user = authenticateService.authenticate(loginRequest);
         String token = jwtService.generateToken(user);

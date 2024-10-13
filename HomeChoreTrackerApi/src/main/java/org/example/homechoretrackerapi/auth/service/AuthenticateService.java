@@ -21,12 +21,12 @@ public class AuthenticateService {
     public User authenticate(LoginRequest loginRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
+                        loginRequest.getEmail(),
                         loginRequest.getPassword()
                 )
         );
 
-        return userRepository.findByEmail(loginRequest.getUsername())
+        return userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }
