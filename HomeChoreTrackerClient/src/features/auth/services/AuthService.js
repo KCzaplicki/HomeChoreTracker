@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import {
+  changePasswordPath,
   getCurrentUserPath,
   loginPath,
 } from "../../../common/constants/ApiPaths";
@@ -45,6 +46,28 @@ const AuthService = {
     } catch (error) {
       console.error(error);
       return null;
+    }
+  },
+
+  changePassword: async (currentPassword, newPassword) => {
+    try {
+      const response = await axios.put(
+        changePasswordPath,
+        {
+          currentPassword,
+          newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getAccessToken()}`,
+          },
+        }
+      );
+
+      return response.status === 200;
+    } catch (error) {
+      console.error(error);
+      return false;
     }
   },
 };

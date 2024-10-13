@@ -112,7 +112,11 @@ const AppHeader = () => {
               },
             }}
           >
-            <MenuItem onClick={handleAccountMenuClose}>
+            <MenuItem
+              component={RouterLink}
+              to="/profile"
+              onClick={handleAccountMenuClose}
+            >
               <ListItemIcon>
                 <Person fontSize="small" />
               </ListItemIcon>

@@ -1,10 +1,12 @@
 package org.example.homechoretrackerapi.auth.controller;
 
+import org.example.homechoretrackerapi.auth.dto.ChangePasswordRequest;
 import org.example.homechoretrackerapi.auth.dto.LoginRequest;
 import org.example.homechoretrackerapi.auth.dto.LoginResponse;
 import org.example.homechoretrackerapi.auth.service.AuthenticateService;
 import org.example.homechoretrackerapi.auth.service.JwtService;
 import org.example.homechoretrackerapi.user.model.User;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,5 +33,12 @@ public class AuthController {
     @GetMapping("current-user")
     public User currentUser(@AuthenticationPrincipal User user) {
         return user;
+    }
+
+    @PutMapping("change-password")
+    public ResponseEntity<Void> changePassword(
+            @AuthenticationPrincipal User user,
+            @RequestBody ChangePasswordRequest changePasswordRequest) {
+        return ResponseEntity.ok().build();
     }
 }
