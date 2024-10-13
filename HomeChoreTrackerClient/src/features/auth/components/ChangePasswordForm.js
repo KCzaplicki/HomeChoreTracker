@@ -24,6 +24,10 @@ const ChangePasswordForm = ({ onChangePassword }) => {
 
     if (result === false) {
       setChangePasswordError("Incorrect current password");
+    } else {
+      setCurrentPassword("");
+      setNewPassword("");
+      setTouched(false);
     }
   };
 

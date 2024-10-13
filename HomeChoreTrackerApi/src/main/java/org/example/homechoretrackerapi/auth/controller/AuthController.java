@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("auth")
 public class AuthController {
-
     private final AuthenticateService authenticateService;
     private final JwtService jwtService;
 
@@ -24,8 +23,8 @@ public class AuthController {
 
     @PostMapping("login")
     public LoginResponse login(@RequestBody LoginRequest loginRequest) {
-        User user = authenticateService.authenticate(loginRequest);
-        String token = jwtService.generateToken(user);
+        var user = authenticateService.authenticate(loginRequest);
+        var token = jwtService.generateToken(user);
 
         return new LoginResponse(token, jwtService.getExpirationTime());
     }
@@ -39,6 +38,8 @@ public class AuthController {
     public ResponseEntity<Void> changePassword(
             @AuthenticationPrincipal User user,
             @RequestBody ChangePasswordRequest changePasswordRequest) {
-        return ResponseEntity.ok().build();
+        authenticateService.changePassword(user.getId(), changePasswordRequest);
+
+        return ResponseEntity.noContent().build();
     }
 }

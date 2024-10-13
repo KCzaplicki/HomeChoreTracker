@@ -64,7 +64,7 @@ const AuthService = {
         }
       );
 
-      return response.status === 200;
+      return response.status === 204;
     } catch (error) {
       console.error(error);
       return false;
