@@ -5,6 +5,7 @@ import org.example.homechoretrackerapi.auth.dto.LoginResponse;
 import org.example.homechoretrackerapi.auth.service.AuthenticateService;
 import org.example.homechoretrackerapi.auth.service.JwtService;
 import org.example.homechoretrackerapi.user.model.User;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,5 +26,10 @@ public class AuthController {
         String token = jwtService.generateToken(user);
 
         return new LoginResponse(token, jwtService.getExpirationTime());
+    }
+
+    @GetMapping("current-user")
+    public User currentUser(@AuthenticationPrincipal User user) {
+        return user;
     }
 }
