@@ -1,12 +1,13 @@
 import React from "react";
 
-import { Container, Divider, Typography, Snackbar, Alert } from "@mui/material";
+import { Container, Divider, Snackbar, Alert, Paper } from "@mui/material";
 
 import UserInformation from "../components/UserInformation";
 import ChangePasswordForm from "../components/ChangePasswordForm";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../services/AuthService";
+import PageTitle from "../../../common/components/PageTitle";
 
 const ProfilePage = () => {
   const [isPasswordChanged, setIsPasswordChanged] = React.useState(false);
@@ -41,10 +42,10 @@ const ProfilePage = () => {
         width: "auto",
         minHeight: "calc(100vh - 110px)",
       }}
+      component={Paper}
+      elevation={3}
     >
-      <Typography variant="h6" sx={{ fontWeight: 500, fontSize: 20, py: 2 }}>
-        Profile
-      </Typography>
+      <PageTitle title="Profile" />
       <Divider />
       <UserInformation />
       <ChangePasswordForm onChangePassword={handleChangePassword} />
