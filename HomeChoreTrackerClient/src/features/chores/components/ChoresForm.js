@@ -12,6 +12,7 @@ import {
   Paper,
   Typography,
   TableFooter,
+  IconButton,
 } from "@mui/material";
 import { Stack } from "@mui/system";
 
@@ -19,6 +20,7 @@ import OptionsButton from "../../../common/components/OptionsButton";
 import ActivityIncrementButton from "./ActivityIncrementButton";
 import WeekNavigation from "./WeekNavigation";
 import AddActivityForm from "./AddActivityForm";
+import { Delete } from "@mui/icons-material";
 
 const ChoresForm = () => {
   const actions = [
@@ -105,7 +107,19 @@ const ChoresForm = () => {
                 key={index}
                 sx={{ "&:nth-of-type(odd)": { backgroundColor: "#f5f5f5" } }}
               >
-                <TableCell>{chore.activity}</TableCell>
+                <TableCell>
+                  <Typography
+                    variant="body1"
+                    sx={{ display: "inline-block", verticalAlign: "middle" }}
+                  >
+                    {chore.activity}
+                  </Typography>
+                  {chore.values.every((value) => value === 0) && (
+                    <IconButton size="small" sx={{ m: 0 }}>
+                      <Delete color="error" />
+                    </IconButton>
+                  )}
+                </TableCell>
                 {chore.values.map((value) => (
                   <TableCell align="center">
                     <ActivityIncrementButton label="+" />
@@ -123,7 +137,7 @@ const ChoresForm = () => {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={3}>
+              <TableCell colSpan={4}>
                 <AddActivityForm />
               </TableCell>
             </TableRow>

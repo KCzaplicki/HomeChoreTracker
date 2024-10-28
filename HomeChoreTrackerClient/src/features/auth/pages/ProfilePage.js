@@ -39,8 +39,8 @@ const ProfilePage = () => {
       sx={{
         background: "white",
         mx: 4,
+        pb: 4,
         width: "auto",
-        minHeight: "calc(100vh - 110px)",
       }}
       component={Paper}
       elevation={3}
