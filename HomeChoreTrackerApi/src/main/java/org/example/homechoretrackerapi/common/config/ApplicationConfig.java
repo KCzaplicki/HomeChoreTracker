@@ -1,4 +1,4 @@
-package org.example.homechoretrackerapi.common;
+package org.example.homechoretrackerapi.common.config;
 
 import org.example.homechoretrackerapi.user.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +11,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
+@EnableTransactionManagement
 public class ApplicationConfig {
     private final UserRepository userRepository;
 

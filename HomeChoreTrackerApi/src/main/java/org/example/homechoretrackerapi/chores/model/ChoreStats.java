@@ -1,6 +1,7 @@
 package org.example.homechoretrackerapi.chores.model;
 
 import jakarta.persistence.*;
+import org.example.homechoretrackerapi.chores.dto.ChoreIncrementType;
 import org.example.homechoretrackerapi.user.model.User;
 
 @Entity
@@ -18,6 +19,23 @@ public class ChoreStats {
 
     @ManyToOne
     private User user;
+
+    @ManyToOne
+    private ChoreWeek choreWeek;
+
+    public ChoreStats() {
+    }
+
+    public ChoreStats(User user, Chore chore, ChoreWeek choreWeek, Integer value) {
+        this.user = user;
+        this.chore = chore;
+        this.choreWeek = choreWeek;
+        this.value = value;
+    }
+
+    public void incrementValue(ChoreIncrementType choreIncrementType) {
+        this.value += choreIncrementType == ChoreIncrementType.INCREMENT ? 1 : -1;
+    }
 
     public Long getId() {
         return id;
@@ -49,5 +67,13 @@ public class ChoreStats {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public ChoreWeek getChoreWeek() {
+        return choreWeek;
+    }
+
+    public void setChoreWeek(ChoreWeek choreWeek) {
+        this.choreWeek = choreWeek;
     }
 }

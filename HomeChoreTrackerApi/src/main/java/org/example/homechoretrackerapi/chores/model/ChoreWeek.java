@@ -29,6 +29,10 @@ public class ChoreWeek {
         this.endDate = endDate;
     }
 
+    public void addChore(Chore chore) {
+        this.chores.add(chore);
+    }
+
     public Long getId() {
         return id;
     }

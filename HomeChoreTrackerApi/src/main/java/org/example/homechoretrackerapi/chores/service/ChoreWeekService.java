@@ -4,9 +4,12 @@ import org.example.homechoretrackerapi.chores.dto.ChoreDetails;
 import org.example.homechoretrackerapi.chores.dto.ChoreUser;
 import org.example.homechoretrackerapi.chores.dto.ChoreWeekDetails;
 import org.example.homechoretrackerapi.chores.dto.ChoreWeekWithNavigation;
+import org.example.homechoretrackerapi.chores.exception.ChoreAlreadyAssignedToWeekException;
+import org.example.homechoretrackerapi.chores.model.Chore;
 import org.example.homechoretrackerapi.chores.model.ChoreStats;
 import org.example.homechoretrackerapi.chores.model.ChoreWeek;
 import org.example.homechoretrackerapi.chores.repository.ChoreWeekRepository;
+import org.example.homechoretrackerapi.common.exception.EntityNotFoundException;
 import org.example.homechoretrackerapi.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -48,8 +51,9 @@ public class ChoreWeekService {
                         users.stream()
                                 .collect(Collectors.toMap(
                                         ChoreUser::getId,
-                                        participant -> chore.getChoreStats().stream()
-                                                .filter(choreValue -> choreValue.getUser().getId().equals(participant.getId()))
+                                        user -> chore.getChoreStats().stream()
+                                                .filter(choreStats -> choreStats.getUser().getId().equals(user.getId()) &&
+                                                        choreStats.getChoreWeek().getId().equals(weekId))
                                                 .findFirst()
                                                 .map(ChoreStats::getValue).orElse(0)
                                 ))
@@ -63,5 +67,17 @@ public class ChoreWeekService {
         );
 
         return Optional.of(choreWeekDetails);
+    }
+
+    public void assignChoreToWeek(Long id, Chore chore) {
+        ChoreWeek choreWeek = choreWeekRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Chore week with id '%d' not found", id)));
+
+        if (choreWeek.getChores().stream().anyMatch(c -> c.getId().equals(chore.getId()))) {
+            throw new ChoreAlreadyAssignedToWeekException(id, chore.getId());
+        }
+
+        choreWeek.addChore(chore);
+        choreWeekRepository.save(choreWeek);
     }
 }

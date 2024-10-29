@@ -4,6 +4,8 @@ import org.example.homechoretrackerapi.chores.dto.ChoreWeekWithNavigation;
 import org.example.homechoretrackerapi.chores.model.ChoreWeek;
 import org.example.homechoretrackerapi.chores.repository.ChoreWeekRepository;
 import org.example.homechoretrackerapi.common.utils.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +15,8 @@ import java.util.Optional;
 
 @Configuration
 public class ChoreConfig {
+    private final Logger logger = LoggerFactory.getLogger(ChoreConfig.class);
+
     private final ChoreWeekRepository choreWeekRepository;
 
     public ChoreConfig(ChoreWeekRepository choreWeekRepository) {
@@ -31,6 +35,7 @@ public class ChoreConfig {
                         DateUtils.getEndOfWeek(currentDate)
                 );
                 choreWeekRepository.save(currentChoreWeekEntity);
+                logger.info("Seeded current chore week");
             }
         };
     }

@@ -11,11 +11,18 @@ public class Chore {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 80, nullable = false)
+    @Column(length = 80, nullable = false, unique = true)
     private String name;
 
-    @OneToMany
+    @OneToMany(mappedBy = "chore")
     private List<ChoreStats> choreStats;
+
+    public Chore() {
+    }
+
+    public Chore(String name) {
+        this.name = name;
+    }
 
     public Long getId() {
         return id;
