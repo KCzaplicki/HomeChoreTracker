@@ -34,7 +34,7 @@ public class ChoreStats {
     }
 
     public void incrementValue(ChoreIncrementType choreIncrementType) {
-        this.value += choreIncrementType == ChoreIncrementType.INCREMENT ? 1 : -1;
+        this.value += choreIncrementType.getValue();
     }
 
     public Long getId() {

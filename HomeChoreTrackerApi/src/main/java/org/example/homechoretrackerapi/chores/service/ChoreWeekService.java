@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,38 +34,20 @@ public class ChoreWeekService {
     }
 
     public Optional<ChoreWeekDetails> getChoreWeekDetailsById(Long weekId) {
-        Optional<ChoreWeek> choreWeek = choreWeekRepository.findById(weekId);
+        Optional<ChoreWeek> choreWeekOptional = choreWeekRepository.findById(weekId);
 
-        if (choreWeek.isEmpty()) {
+        if (choreWeekOptional.isEmpty()) {
             return Optional.empty();
         }
 
-        List<ChoreUser> users =
-                userRepository.findAll().stream()
-                        .map(user -> new ChoreUser(user.getId(), user.getFirstName() + " " + user.getLastName().charAt(0) + "."))
-                        .toList();
-
-        List<ChoreDetails> chores = choreWeek.get().getChores().stream()
-                .map(chore -> new ChoreDetails(
-                        chore.getId(),
-                        chore.getName(),
-                        users.stream()
-                                .collect(Collectors.toMap(
-                                        ChoreUser::getId,
-                                        user -> chore.getChoreStats().stream()
-                                                .filter(choreStats -> choreStats.getUser().getId().equals(user.getId()) &&
-                                                        choreStats.getChoreWeek().getId().equals(weekId))
-                                                .findFirst()
-                                                .map(ChoreStats::getValue).orElse(0)
-                                ))
-                ))
+        ChoreWeek choreWeek = choreWeekOptional.get();
+        List<ChoreUser> users = userRepository.findAll().stream()
+                .map(ChoreUser::from)
                 .toList();
-
-        ChoreWeekDetails choreWeekDetails = new ChoreWeekDetails(
-                choreWeek.get().getId(),
-                users,
-                chores
-        );
+        List<ChoreDetails> chores = choreWeek.getChores().stream()
+                .map(chore -> ChoreDetails.from(chore, getChoreStats(weekId, chore, users)))
+                .toList();
+        ChoreWeekDetails choreWeekDetails = new ChoreWeekDetails(choreWeek.getId(), users, chores);
 
         return Optional.of(choreWeekDetails);
     }
@@ -79,5 +62,15 @@ public class ChoreWeekService {
 
         choreWeek.addChore(chore);
         choreWeekRepository.save(choreWeek);
+    }
+
+    private Map<Long, Integer> getChoreStats(Long weekId, Chore chore, List<ChoreUser> users) {
+        return users.stream()
+                .collect(Collectors.toMap(
+                        ChoreUser::getId,
+                        user -> chore.getChoreStatsForWeekAndUser(weekId, user.getId())
+                                .map(ChoreStats::getValue)
+                                .orElse(0)
+                ));
     }
 }

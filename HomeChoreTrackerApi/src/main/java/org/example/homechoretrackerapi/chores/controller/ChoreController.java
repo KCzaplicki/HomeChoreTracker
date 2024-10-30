@@ -44,7 +44,8 @@ public class ChoreController {
         IncrementChoreStatsRequest incrementChoreStatsRequest = new IncrementChoreStatsRequest(
                 choreId,
                 user.getId(),
-                weekId, incrementValue > 0 ? ChoreIncrementType.INCREMENT : ChoreIncrementType.DECREMENT
+                weekId,
+                ChoreIncrementType.from(incrementValue)
         );
         choreService.incrementChoreStats(incrementChoreStatsRequest);
 

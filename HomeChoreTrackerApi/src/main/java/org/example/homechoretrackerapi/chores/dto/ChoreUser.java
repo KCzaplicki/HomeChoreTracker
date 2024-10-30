@@ -1,5 +1,7 @@
 package org.example.homechoretrackerapi.chores.dto;
 
+import org.example.homechoretrackerapi.user.model.User;
+
 public class ChoreUser {
     private Long id;
     private String name;
@@ -10,6 +12,10 @@ public class ChoreUser {
     public ChoreUser(Long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public static ChoreUser from(User user) {
+        return new ChoreUser(user.getId(), user.getFirstName() + " " + user.getLastName().charAt(0) + ".");
     }
 
     public Long getId() {

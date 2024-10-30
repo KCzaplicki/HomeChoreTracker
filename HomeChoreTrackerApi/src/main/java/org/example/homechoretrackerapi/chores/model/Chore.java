@@ -3,6 +3,7 @@ package org.example.homechoretrackerapi.chores.model;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "chores")
@@ -22,6 +23,12 @@ public class Chore {
 
     public Chore(String name) {
         this.name = name;
+    }
+
+    public Optional<ChoreStats> getChoreStatsForWeekAndUser(Long weekId, Long userId) {
+        return this.choreStats.stream()
+                .filter(s -> s.getChoreWeek().getId().equals(weekId) && s.getUser().getId().equals(userId))
+                .findFirst();
     }
 
     public Long getId() {

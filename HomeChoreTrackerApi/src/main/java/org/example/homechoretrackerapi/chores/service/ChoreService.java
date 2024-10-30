@@ -52,19 +52,25 @@ public class ChoreService {
         Chore chore = choreRepository.findById(incrementChoreStatsRequest.getChoreId())
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Chore with id '%d' not found", incrementChoreStatsRequest.getChoreId())));
 
-        ChoreStats stats = chore.getChoreStats().stream()
-                .filter(s -> s.getChoreWeek().getId().equals(incrementChoreStatsRequest.getWeekId()) &&
-                        s.getUser().getId().equals(incrementChoreStatsRequest.getUserId()))
-                .findFirst()
-                .orElseGet(() -> {
-                    User user = userRepository.findById(incrementChoreStatsRequest.getUserId())
-                            .orElseThrow(() -> new EntityNotFoundException(String.format("User with id '%d' not found", incrementChoreStatsRequest.getUserId())));
-                    ChoreWeek choreWeek = choreWeekRepository.findById(incrementChoreStatsRequest.getWeekId())
-                            .orElseThrow(() -> new EntityNotFoundException(String.format("Chore week with id '%d' not found", incrementChoreStatsRequest.getWeekId())));
-                    return new ChoreStats(user, chore, choreWeek, 0);
-                });
+        ChoreStats stats = chore.getChoreStatsForWeekAndUser(
+                        incrementChoreStatsRequest.getWeekId(),
+                        incrementChoreStatsRequest.getUserId()
+                )
+                .orElseGet(() -> createChoreStats(incrementChoreStatsRequest, chore));
 
         stats.incrementValue(incrementChoreStatsRequest.getIncrementType());
         choreStatsRepository.save(stats);
+    }
+
+    private ChoreStats createChoreStats(IncrementChoreStatsRequest incrementChoreStatsRequest, Chore chore) {
+        User user = userRepository.findById(incrementChoreStatsRequest.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with id '%d' not found", incrementChoreStatsRequest.getUserId())));
+
+        ChoreWeek choreWeek = choreWeekRepository.findById(incrementChoreStatsRequest.getWeekId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Chore week with id '%d' not found", incrementChoreStatsRequest.getWeekId())));
+
+        return new ChoreStats(user, chore, choreWeek, 0);
     }
 }

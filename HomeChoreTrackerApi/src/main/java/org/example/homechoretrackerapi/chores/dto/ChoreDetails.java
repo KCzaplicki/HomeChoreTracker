@@ -1,5 +1,7 @@
 package org.example.homechoretrackerapi.chores.dto;
 
+import org.example.homechoretrackerapi.chores.model.Chore;
+
 import java.util.Map;
 
 public class ChoreDetails {
@@ -14,6 +16,10 @@ public class ChoreDetails {
         this.id = id;
         this.name = name;
         this.values = values;
+    }
+
+    public static ChoreDetails from(Chore chore, Map<Long, Integer> stats) {
+        return new ChoreDetails(chore.getId(), chore.getName(), stats);
     }
 
     public Long getId() {
