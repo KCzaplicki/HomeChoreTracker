@@ -63,13 +63,19 @@ public class ChoreService {
     }
 
     private ChoreStats createChoreStats(IncrementChoreStatsRequest incrementChoreStatsRequest, Chore chore) {
-        User user = userRepository.findById(incrementChoreStatsRequest.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("User with id '%d' not found", incrementChoreStatsRequest.getUserId())));
+        if (!userRepository.existsById(incrementChoreStatsRequest.getUserId())) {
+            throw new EntityNotFoundException(
+                    String.format("User with id '%d' not found", incrementChoreStatsRequest.getUserId()));
+        }
 
-        ChoreWeek choreWeek = choreWeekRepository.findById(incrementChoreStatsRequest.getWeekId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("Chore week with id '%d' not found", incrementChoreStatsRequest.getWeekId())));
+        User user = userRepository.getReferenceById(incrementChoreStatsRequest.getUserId());
+
+        if (!choreWeekRepository.existsById(incrementChoreStatsRequest.getWeekId())) {
+            throw new EntityNotFoundException(
+                    String.format("Chore week with id '%d' not found", incrementChoreStatsRequest.getWeekId()));
+        }
+
+        ChoreWeek choreWeek = choreWeekRepository.getReferenceById(incrementChoreStatsRequest.getWeekId());
 
         return new ChoreStats(user, chore, choreWeek, 0);
     }

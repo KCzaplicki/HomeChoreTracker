@@ -25,7 +25,7 @@ public class ChoreWeekController {
     }
 
     @GetMapping("{weekId}/details")
-    public ChoreWeekDetails getChoreWeekDetailsByStartDate(@PathVariable Long weekId) {
+    public ChoreWeekDetails getChoreWeekDetailsById(@PathVariable Long weekId) {
         return choreWeekService.getChoreWeekDetailsById(weekId)
             .orElseThrow(() -> new EntityNotFoundException(String.format("Chore week for weekId '%d' not found", weekId)));
     }

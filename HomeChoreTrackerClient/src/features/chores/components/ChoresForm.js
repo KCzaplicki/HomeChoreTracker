@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Table,
@@ -15,12 +15,14 @@ import {
   IconButton,
 } from "@mui/material";
 import { Stack } from "@mui/system";
+import { Delete } from "@mui/icons-material";
 
 import OptionsButton from "../../../common/components/OptionsButton";
 import ActivityIncrementButton from "./ActivityIncrementButton";
 import WeekNavigation from "./WeekNavigation";
 import AddActivityForm from "./AddActivityForm";
-import { Delete } from "@mui/icons-material";
+import ChoreService from "../services/ChoreService";
+import { useAuth } from "../../auth/contexts/AuthContext";
 
 const ChoresForm = () => {
   const actions = [
@@ -33,117 +35,181 @@ const ChoresForm = () => {
       onClick: () => {},
     },
   ];
-  const users = ["John", "Mark"];
-  const chores = [
-    {
-      activity: "Laundry",
-      values: [3, 4],
-    },
-    {
-      activity: "Dishes",
-      values: [2, 3],
-    },
-    {
-      activity: "Trash",
-      values: [1, 1],
-    },
-    {
-      activity: "Walk dog",
-      values: [1, 2],
-    },
-    {
-      activity: "Water plants",
-      values: [3, 5],
-    },
-    {
-      activity: "Vacuum",
-      values: [2, 2],
-    },
-    {
-      activity: "Clean bathroom",
-      values: [1, 0],
-    },
-    {
-      activity: "Mop",
-      values: [0, 0],
-    },
-    {
-      activity: "Groceries",
-      values: [0, 0],
-    },
-  ];
+
+  const { user: currentUser } = useAuth();
+
+  const [choreWeek, setChoreWeek] = useState({});
+  const [selectedWeekDate, setSelectedWeekDate] = useState(new Date());
+  const [choreWeekDetails, setChoreWeekDetails] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadChoreWeek();
+  }, []);
+
+  useEffect(() => {
+    loadChoreWeekDetails()
+      .then(() => setLoading(false))
+      .catch(() => setLoading(false));
+  }, [choreWeek]);
+
+  const loadChoreWeek = async () => {
+    const result = await ChoreService.getChoreWeek(selectedWeekDate);
+
+    if (result) {
+      setChoreWeek(result);
+    }
+  };
+
+  const loadChoreWeekDetails = async () => {
+    if (!choreWeek?.id) {
+      return;
+    }
+
+    const result = await ChoreService.getChoreWeekDetails(choreWeek.id);
+
+    if (result) {
+      setChoreWeekDetails(result);
+    }
+  };
+
+  const canBeDeleted = (chore) => {
+    return Object.values(chore.values).every((value) => value === 0);
+  };
+
+  const incrementChoreStats = (choreId, value) => {
+    ChoreService.incrementChoreStats(choreWeek.id, choreId, value).then(() =>
+      loadChoreWeekDetails()
+    );
+  };
+
+  const handleAddActivity = async (activityName) => {
+    if (choreWeekDetails.chores.find((chore) => chore.name === activityName)) {
+      return {
+        success: false,
+        error: "Chore already exists in this week",
+      };
+    }
+
+    const added = await ChoreService.addChoreToWeek(choreWeek.id, activityName);
+
+    if (added) {
+      loadChoreWeekDetails();
+    }
+
+    return { success: added };
+  };
+
+  const deleteChoreFromWeek = (choreId) => {
+    ChoreService.deleteChoreFromWeek(choreWeek.id, choreId).then(() =>
+      loadChoreWeekDetails()
+    );
+  };
 
   return (
     <Container sx={{ my: 2 }}>
-      <Stack
-        direction="row"
-        divider={<Divider orientation="vertical" flexItem />}
-        justifyContent="flex-end"
-        spacing={2}
-        sx={{ mb: 2 }}
-      >
-        <WeekNavigation currentWeek="4 - 11 Nov" />
-        <OptionsButton label="Actions" items={actions} />
-      </Stack>
-      <TableContainer component={Paper} elevation={3}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ fontWeight: "bold" }}>Activity</TableCell>
-              {users.map((user) => (
-                <TableCell
-                  key={user}
-                  align="center"
-                  sx={{ fontWeight: "bold" }}
-                >
-                  {user}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {chores.map((chore, index) => (
-              <TableRow
-                key={index}
-                sx={{ "&:nth-of-type(odd)": { backgroundColor: "#f5f5f5" } }}
-              >
-                <TableCell>
-                  <Typography
-                    variant="body1"
-                    sx={{ display: "inline-block", verticalAlign: "middle" }}
-                  >
-                    {chore.activity}
-                  </Typography>
-                  {chore.values.every((value) => value === 0) && (
-                    <IconButton size="small" sx={{ m: 0 }}>
-                      <Delete color="error" />
-                    </IconButton>
-                  )}
-                </TableCell>
-                {chore.values.map((value) => (
-                  <TableCell align="center">
-                    <ActivityIncrementButton label="+" />
-                    <Typography
-                      variant="body1"
-                      sx={{ display: "inline-block", verticalAlign: "middle" }}
+      {(loading || !choreWeek) && <Typography>Loading...</Typography>}
+      {!loading && (
+        <>
+          <Stack
+            direction="row"
+            divider={<Divider orientation="vertical" flexItem />}
+            justifyContent="flex-end"
+            spacing={2}
+            sx={{ mb: 2 }}
+          >
+            <WeekNavigation choreWeek={choreWeek} />
+            <OptionsButton label="Actions" items={actions} />
+          </Stack>
+          <TableContainer component={Paper} elevation={3}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: "bold" }}>Activity</TableCell>
+                  {choreWeekDetails?.users?.map((user) => (
+                    <TableCell
+                      key={user.id}
+                      align="center"
+                      sx={{ fontWeight: "bold" }}
                     >
-                      {value}
-                    </Typography>
-                    <ActivityIncrementButton label="-" />
-                  </TableCell>
+                      {user.name}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {choreWeekDetails?.chores?.map((chore) => (
+                  <TableRow
+                    key={chore.id}
+                    sx={{
+                      "&:nth-of-type(odd)": { backgroundColor: "#f5f5f5" },
+                    }}
+                  >
+                    <TableCell>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          display: "inline-block",
+                          verticalAlign: "middle",
+                        }}
+                      >
+                        {chore.name}
+                      </Typography>
+                      {canBeDeleted(chore) && (
+                        <IconButton
+                          size="small"
+                          sx={{ m: 0 }}
+                          onClick={() => deleteChoreFromWeek(chore.id)}
+                        >
+                          <Delete color="error" />
+                        </IconButton>
+                      )}
+                    </TableCell>
+                    {choreWeekDetails.users
+                      .map((user) => ({
+                        userId: user.id,
+                        value: chore.values[user.id],
+                      }))
+                      .map(({ userId, value }) => (
+                        <TableCell align="center">
+                          {currentUser.id === userId && (
+                            <ActivityIncrementButton
+                              label="+"
+                              onClick={() => incrementChoreStats(chore.id, 1)}
+                            />
+                          )}
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              display: "inline-block",
+                              verticalAlign: "middle",
+                            }}
+                          >
+                            {value}
+                          </Typography>
+                          {currentUser.id === userId && (
+                            <ActivityIncrementButton
+                              label="-"
+                              onClick={() => incrementChoreStats(chore.id, -1)}
+                              disabled={value === 0}
+                            />
+                          )}
+                        </TableCell>
+                      ))}
+                  </TableRow>
                 ))}
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={4}>
-                <AddActivityForm />
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </TableContainer>
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell colSpan={4}>
+                    <AddActivityForm onAddActivity={handleAddActivity} />
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </TableContainer>
+        </>
+      )}
     </Container>
   );
 };

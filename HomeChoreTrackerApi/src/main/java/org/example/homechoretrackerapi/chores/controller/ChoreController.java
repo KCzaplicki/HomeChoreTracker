@@ -29,9 +29,17 @@ public class ChoreController {
     public ChoreResponse addChore(@RequestBody AddChoreRequest addChoreRequest) {
         Chore chore = choreService.getChoreByName(addChoreRequest.getName())
                 .orElseGet(() -> choreService.addChore(addChoreRequest.getName()));
-        choreWeekService.assignChoreToWeek(chore.getId(), chore);
+        choreWeekService.assignChoreToWeek(addChoreRequest.getWeekId(), chore);
 
         return new ChoreResponse(chore.getId(), chore.getName());
+    }
+
+    @DeleteMapping({"week/{weekId}/chore/{choreId}"})
+    @Transactional
+    public ResponseEntity<Void> deleteChore(@PathVariable Long weekId, @PathVariable Long choreId) {
+        choreWeekService.unassignChoreFromWeek(weekId, choreId);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("week/{weekId}/chore/{choreId}")

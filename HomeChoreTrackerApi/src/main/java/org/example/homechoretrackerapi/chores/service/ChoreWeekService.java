@@ -5,6 +5,7 @@ import org.example.homechoretrackerapi.chores.dto.ChoreUser;
 import org.example.homechoretrackerapi.chores.dto.ChoreWeekDetails;
 import org.example.homechoretrackerapi.chores.dto.ChoreWeekWithNavigation;
 import org.example.homechoretrackerapi.chores.exception.ChoreAlreadyAssignedToWeekException;
+import org.example.homechoretrackerapi.chores.exception.ChoreNotAssignedToWeekException;
 import org.example.homechoretrackerapi.chores.model.Chore;
 import org.example.homechoretrackerapi.chores.model.ChoreStats;
 import org.example.homechoretrackerapi.chores.model.ChoreWeek;
@@ -61,6 +62,17 @@ public class ChoreWeekService {
         }
 
         choreWeek.addChore(chore);
+        choreWeekRepository.save(choreWeek);
+    }
+
+    public void unassignChoreFromWeek(Long weekId, Long choreId) {
+        ChoreWeek choreWeek = choreWeekRepository.findById(weekId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Chore week with id '%d' not found", weekId)));
+
+        if (!choreWeek.getChores().removeIf(chore -> chore.getId().equals(choreId))) {
+            throw new ChoreNotAssignedToWeekException(weekId, choreId);
+        }
+
         choreWeekRepository.save(choreWeek);
     }
 
