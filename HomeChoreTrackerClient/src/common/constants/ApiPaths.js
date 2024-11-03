@@ -1,15 +1,15 @@
 export const apiUrl = process.env.REACT_APP_API_URL;
 
-export const loginPath = `${apiUrl}/auth/login`;
-export const getCurrentUserPath = `${apiUrl}/auth/current-user`;
-export const changePasswordPath = `${apiUrl}/auth/change-password`;
+export const loginPath = "auth/login";
+export const getCurrentUserPath = "auth/current-user";
+export const changePasswordPath = "auth/change-password";
 
-export const getChoreWeekPath = (date) => `${apiUrl}/chores/week/${date}`;
+export const getChoreWeekPath = (date) => `chores/week/${date}`;
 export const getChoreWeekDetailsPath = (weekId) =>
-  `${apiUrl}/chores/week/${weekId}/details`;
+  `chores/week/${weekId}/details`;
 
 export const incrementChoreStatsPath = (weekId, choreId, value) =>
-  `${apiUrl}/chores/week/${weekId}/chore/${choreId}?inc=${value}`;
-export const addChoreToWeekPath = `${apiUrl}/chores`;
+  `chores/week/${weekId}/chore/${choreId}?inc=${value}`;
+export const addChoreToWeekPath = "chores";
 export const deleteChoreFromWeekPath = (weekId, choreId) =>
-  `${apiUrl}/chores/week/${weekId}/chore/${choreId}`;
+  `chores/week/${weekId}/chore/${choreId}`;

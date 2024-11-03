@@ -1,15 +1,20 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 
 import AuthService from "../services/AuthService";
-import { setAccessToken } from "../utils/AccessTokenUtils";
+import {
+  getAccessToken,
+  setAccessToken,
+  clearAccessToken,
+} from "../utils/accessTokenUtils";
 
 const AuthContext = createContext(null);
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(undefined);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const authenticate = async (token) => {
     setAccessToken(token);
@@ -25,14 +30,30 @@ export const AuthProvider = ({ children }) => {
   };
 
   const clearAuthentication = () => {
-    setAccessToken(null);
+    clearAccessToken();
     setUser(null);
     setIsAuthenticated(false);
   };
 
+  useEffect(() => {
+    const accessToken = getAccessToken();
+
+    if (accessToken) {
+      authenticate(accessToken).then(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, authenticate, clearAuthentication }}
+      value={{
+        isAuthenticated,
+        user,
+        loading,
+        authenticate,
+        clearAuthentication,
+      }}
     >
       {children}
     </AuthContext.Provider>

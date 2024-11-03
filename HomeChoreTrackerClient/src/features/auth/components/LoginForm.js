@@ -34,7 +34,7 @@ const LoginForm = ({ onLogin }) => {
             label="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            error={touched && (email === "" || loginError)}
+            error={touched && (email === "" || !!loginError)}
             helperText={
               touched && email === "" ? "Field is required" : loginError
             }

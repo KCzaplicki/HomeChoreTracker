@@ -2,7 +2,7 @@ import React from "react";
 
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { IconButton, Paper, Typography } from "@mui/material";
-import { formatDateRange } from "../../../common/utils/DateUtil";
+import { formatDateRange } from "../../../common/utils/dateUtils";
 
 const WeekNavigation = ({ choreWeek }) => {
   const choreWeekValue = formatDateRange(

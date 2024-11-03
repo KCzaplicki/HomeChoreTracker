@@ -14,7 +14,6 @@ const ChoresPage = () => {
         mb: 2,
         pb: 2,
         width: "auto",
-        minHeight: "calc(100vh - 110px)",
       }}
       component={Paper}
       elevation={3}

@@ -36,12 +36,12 @@ const ChoresForm = () => {
     },
   ];
 
-  const { user: currentUser } = useAuth();
-
   const [choreWeek, setChoreWeek] = useState({});
   const [selectedWeekDate, setSelectedWeekDate] = useState(new Date());
   const [choreWeekDetails, setChoreWeekDetails] = useState({});
   const [loading, setLoading] = useState(true);
+
+  const { user: currentUser } = useAuth();
 
   useEffect(() => {
     loadChoreWeek();
@@ -171,7 +171,7 @@ const ChoresForm = () => {
                         value: chore.values[user.id],
                       }))
                       .map(({ userId, value }) => (
-                        <TableCell align="center">
+                        <TableCell align="center" key={userId}>
                           {currentUser.id === userId && (
                             <ActivityIncrementButton
                               label="+"

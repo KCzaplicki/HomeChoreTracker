@@ -1,58 +1,43 @@
-import axios from "axios";
+import apiClient from "../../../common/configs/axiosConfig";
 
-import { getAccessToken } from "../../auth/utils/AccessTokenUtils";
 import {
   getChoreWeekPath,
   getChoreWeekDetailsPath,
   incrementChoreStatsPath,
   addChoreToWeekPath,
   deleteChoreFromWeekPath,
-} from "../../../common/constants/ApiPaths";
-import { formatDate } from "../../../common/utils/DateUtil";
+} from "../../../common/constants/apiPaths";
+import { formatDate } from "../../../common/utils/dateUtils";
 
 const ChoreService = {
   getChoreWeek: async (date) => {
     const parsedChoreWeekDate = formatDate(new Date(date));
 
     try {
-      const response = await axios.get(getChoreWeekPath(parsedChoreWeekDate), {
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      });
+      const response = await apiClient.get(
+        getChoreWeekPath(parsedChoreWeekDate)
+      );
 
       return response.data;
     } catch (error) {
       console.error(error);
-      return null;
     }
   },
 
   getChoreWeekDetails: async (weekId) => {
     try {
-      const response = await axios.get(getChoreWeekDetailsPath(weekId), {
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      });
+      const response = await apiClient.get(getChoreWeekDetailsPath(weekId));
 
       return response.data;
     } catch (error) {
       console.error(error);
-      return null;
     }
   },
 
   incrementChoreStats: async (weekId, choreId, value) => {
     try {
-      const response = await axios.post(
-        incrementChoreStatsPath(weekId, choreId, value),
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${getAccessToken()}`,
-          },
-        }
+      const response = await apiClient.post(
+        incrementChoreStatsPath(weekId, choreId, value)
       );
 
       return response.status === 204;
@@ -63,15 +48,10 @@ const ChoreService = {
 
   addChoreToWeek: async (weekId, name) => {
     try {
-      const response = await axios.post(
-        addChoreToWeekPath,
-        { weekId, name },
-        {
-          headers: {
-            Authorization: `Bearer ${getAccessToken()}`,
-          },
-        }
-      );
+      const response = await apiClient.post(addChoreToWeekPath, {
+        weekId,
+        name,
+      });
 
       return response.status === 200;
     } catch (error) {
@@ -81,13 +61,8 @@ const ChoreService = {
 
   deleteChoreFromWeek: async (weekId, choreId) => {
     try {
-      const response = await axios.delete(
-        deleteChoreFromWeekPath(weekId, choreId),
-        {
-          headers: {
-            Authorization: `Bearer ${getAccessToken()}`,
-          },
-        }
+      const response = await apiClient.delete(
+        deleteChoreFromWeekPath(weekId, choreId)
       );
 
       return response.status === 204;

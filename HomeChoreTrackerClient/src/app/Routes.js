@@ -8,7 +8,7 @@ import ChoresPage from "../features/chores/pages/ChoresPage";
 import ProfilePage from "../features/auth/pages/ProfilePage";
 
 const AppRoutes = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
   return (
     <Routes>
@@ -20,7 +20,7 @@ const AppRoutes = () => {
           <Route path="/users" element={<UsersPage />} />
         </>
       )}
-      {!isAuthenticated && (
+      {!isAuthenticated && !loading && (
         <>
           <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
