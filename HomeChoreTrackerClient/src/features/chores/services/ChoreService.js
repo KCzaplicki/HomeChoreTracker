@@ -6,6 +6,7 @@ import {
   incrementChoreStatsPath,
   addChoreToWeekPath,
   deleteChoreFromWeekPath,
+  createEmptyChoreWeekPath,
 } from "../../../common/constants/apiPaths";
 import { formatDate } from "../../../common/utils/dateUtils";
 
@@ -66,6 +67,16 @@ const ChoreService = {
       );
 
       return response.status === 204;
+    } catch (error) {
+      console.error(error);
+    }
+  },
+
+  createEmptyChoreWeek: async () => {
+    try {
+      const response = await apiClient.post(createEmptyChoreWeekPath);
+
+      return response.data;
     } catch (error) {
       console.error(error);
     }

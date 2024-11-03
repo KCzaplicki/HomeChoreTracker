@@ -13,3 +13,5 @@ export const incrementChoreStatsPath = (weekId, choreId, value) =>
 export const addChoreToWeekPath = "chores";
 export const deleteChoreFromWeekPath = (weekId, choreId) =>
   `chores/week/${weekId}/chore/${choreId}`;
+
+export const createEmptyChoreWeekPath = "chores/week";

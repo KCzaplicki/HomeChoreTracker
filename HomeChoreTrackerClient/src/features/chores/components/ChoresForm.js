@@ -25,17 +25,6 @@ import ChoreService from "../services/ChoreService";
 import { useAuth } from "../../auth/contexts/AuthContext";
 
 const ChoresForm = () => {
-  const actions = [
-    {
-      label: "Create empty",
-      onClick: () => {},
-    },
-    {
-      label: "Copy from this week",
-      onClick: () => {},
-    },
-  ];
-
   const [choreWeek, setChoreWeek] = useState({});
   const [selectedWeekDate, setSelectedWeekDate] = useState(new Date());
   const [choreWeekDetails, setChoreWeekDetails] = useState({});
@@ -45,7 +34,7 @@ const ChoresForm = () => {
 
   useEffect(() => {
     loadChoreWeek();
-  }, []);
+  }, [selectedWeekDate]);
 
   useEffect(() => {
     loadChoreWeekDetails()
@@ -73,9 +62,12 @@ const ChoresForm = () => {
     }
   };
 
-  const canBeDeleted = (chore) => {
+  const canDeleteChore = (chore) => {
     return Object.values(chore.values).every((value) => value === 0);
   };
+
+  const canCreateNewWeek = () =>
+    choreWeek?.isCurrentWeek && !choreWeek?.hasNextWeek;
 
   const incrementChoreStats = (choreId, value) => {
     ChoreService.incrementChoreStats(choreWeek.id, choreId, value).then(() =>
@@ -106,6 +98,27 @@ const ChoresForm = () => {
     );
   };
 
+  const createEmptyChoreWeek = () => {
+    ChoreService.createEmptyChoreWeek().then((nextChoreWeek) => {
+      const nextChoreWeekDate = new Date(nextChoreWeek.startDate);
+      setSelectedWeekDate(nextChoreWeekDate);
+    });
+  };
+
+  const handleNavigatedToPrevious = () => {
+    const newDate = new Date(choreWeek.startDate);
+    newDate.setDate(newDate.getDate() - 1);
+
+    setSelectedWeekDate(newDate);
+  };
+
+  const handleNavigatedToNext = () => {
+    const newDate = new Date(choreWeek.endDate);
+    newDate.setDate(newDate.getDate() + 1);
+
+    setSelectedWeekDate(newDate);
+  };
+
   return (
     <Container sx={{ my: 2 }}>
       {(loading || !choreWeek) && <Typography>Loading...</Typography>}
@@ -118,8 +131,26 @@ const ChoresForm = () => {
             spacing={2}
             sx={{ mb: 2 }}
           >
-            <WeekNavigation choreWeek={choreWeek} />
-            <OptionsButton label="Actions" items={actions} />
+            <WeekNavigation
+              choreWeek={choreWeek}
+              onNavigatedToPrevious={handleNavigatedToPrevious}
+              onNavigatedToNext={handleNavigatedToNext}
+            />
+            <OptionsButton
+              label="Actions"
+              items={[
+                {
+                  label: "Create empty",
+                  onClick: createEmptyChoreWeek,
+                  disabled: !canCreateNewWeek(),
+                },
+                {
+                  label: "Copy from this week",
+                  onClick: () => {},
+                  disabled: !canCreateNewWeek(),
+                },
+              ]}
+            />
           </Stack>
           <TableContainer component={Paper} elevation={3}>
             <Table>
@@ -155,7 +186,7 @@ const ChoresForm = () => {
                       >
                         {chore.name}
                       </Typography>
-                      {canBeDeleted(chore) && (
+                      {canDeleteChore(chore) && (
                         <IconButton
                           size="small"
                           sx={{ m: 0 }}

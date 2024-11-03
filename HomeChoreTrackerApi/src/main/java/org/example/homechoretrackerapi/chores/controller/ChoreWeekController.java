@@ -29,4 +29,9 @@ public class ChoreWeekController {
         return choreWeekService.getChoreWeekDetailsById(weekId)
             .orElseThrow(() -> new EntityNotFoundException(String.format("Chore week for weekId '%d' not found", weekId)));
     }
+
+    @PostMapping
+    public ChoreWeekWithNavigation createEmptyChoreWeek() {
+        return choreWeekService.createEmptyChoreWeek();
+    }
 }

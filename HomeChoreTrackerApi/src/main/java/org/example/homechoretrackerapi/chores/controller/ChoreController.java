@@ -36,7 +36,7 @@ public class ChoreController {
 
     @DeleteMapping({"week/{weekId}/chore/{choreId}"})
     @Transactional
-    public ResponseEntity<Void> deleteChore(@PathVariable Long weekId, @PathVariable Long choreId) {
+    public ResponseEntity<Void> unassignChore(@PathVariable Long weekId, @PathVariable Long choreId) {
         choreWeekService.unassignChoreFromWeek(weekId, choreId);
 
         return ResponseEntity.noContent().build();

@@ -5,10 +5,12 @@ import {
   getCurrentUserPath,
   loginPath,
 } from "../../../common/constants/apiPaths";
+import { clearAccessToken } from "../utils/accessTokenUtils";
 
 const AuthService = {
   login: async (email, password) => {
     try {
+      clearAccessToken();
       const response = await apiClient.post(
         loginPath,
         {

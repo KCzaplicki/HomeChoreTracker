@@ -1,5 +1,7 @@
 package org.example.homechoretrackerapi.chores.dto;
 
+import org.example.homechoretrackerapi.common.utils.DateUtils;
+
 import java.util.Date;
 
 public class ChoreWeekWithNavigation {
@@ -18,6 +20,11 @@ public class ChoreWeekWithNavigation {
         this.endDate = endDate;
         this.hasPreviousWeek = hasPreviousWeek;
         this.hasNextWeek = hasNextWeek;
+    }
+
+    public boolean getIsCurrentWeek() {
+        Date currentDate = DateUtils.getToday();
+        return currentDate.compareTo(startDate) >= 0 && currentDate.compareTo(endDate) <= 0;
     }
 
     public Long getId() {

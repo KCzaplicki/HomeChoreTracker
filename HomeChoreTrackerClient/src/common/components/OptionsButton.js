@@ -44,8 +44,15 @@ export const OptionsButton = ({ label, items }) => {
           },
         }}
       >
-        {items.map(({ label, onClick }) => (
-          <MenuItem key={label} onClick={() => closeMenu() && onClick()}>
+        {items.map(({ label, onClick, disabled }) => (
+          <MenuItem
+            key={label}
+            onClick={() => {
+              onClick();
+              closeMenu();
+            }}
+            disabled={disabled}
+          >
             {label}
           </MenuItem>
         ))}

@@ -11,6 +11,7 @@ import org.example.homechoretrackerapi.chores.model.ChoreStats;
 import org.example.homechoretrackerapi.chores.model.ChoreWeek;
 import org.example.homechoretrackerapi.chores.repository.ChoreWeekRepository;
 import org.example.homechoretrackerapi.common.exception.EntityNotFoundException;
+import org.example.homechoretrackerapi.common.utils.DateUtils;
 import org.example.homechoretrackerapi.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,6 +76,21 @@ public class ChoreWeekService {
         }
 
         choreWeekRepository.save(choreWeek);
+    }
+
+    public ChoreWeekWithNavigation createEmptyChoreWeek() {
+        Date currentDate = DateUtils.getToday();
+        ChoreWeekWithNavigation currentChoreWeek = getChoreWeekByDate(currentDate)
+            .orElseThrow(() -> new EntityNotFoundException("Current chore week not found"));
+
+        Date nextWeekStartDate = new Date(currentChoreWeek.getEndDate().getTime() + TimeUnit.DAYS.toMillis(1));
+        Date nextWeekEndDate = DateUtils.getEndOfWeek(nextWeekStartDate);
+        ChoreWeek nextChoreWeek = new ChoreWeek(nextWeekStartDate, nextWeekEndDate);
+        choreWeekRepository.save(nextChoreWeek);
+
+        return new ChoreWeekWithNavigation(
+            nextChoreWeek.getId(), nextWeekStartDate, nextWeekEndDate, true, false
+        );
     }
 
     private Map<Long, Integer> getChoreStats(Long weekId, Chore chore, List<ChoreUser> users) {
